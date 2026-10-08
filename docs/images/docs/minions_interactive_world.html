@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mundo Minion - Experiencia Interactiva</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Fredoka & Nunito -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        minionYellow: '#FFD000',
+                        minionYellowDark: '#E6B800',
+                        minionBlue: '#1C5D99',
+                        minionBlueDark: '#003366',
+                        minionDark: '#222222',
+                        minionGoggle: '#A0A0A0'
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        nunito: ['Nunito', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #FFF9D6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        /* Banana Background Animation */
+        #banana-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .floating-banana {
+            position: absolute;
+            user-select: none;
+            opacity: 0.25;
+            animation: floatDown linear infinite;
+        }
+
+        @keyframes floatDown {
+            0% {
+                transform: translateY(-10vh) rotate(0deg);
+            }
+            100% {
+                transform: translateY(110vh) rotate(360deg);
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FFEAA7;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1C5D99;
+            border-radius: 5px;
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(8px);
+            border: 3px solid #222222;
+            box-shadow: 6px 6px 0px #222222;
+            border-radius: 1.25rem;
+        }
+
+        .glass-button {
+            border: 3px solid #222222;
+            box-shadow: 4px 4px 0px #222222;
+            transition: all 0.15s ease-in-out;
+        }
+
+        .glass-button:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px #222222;
+        }
+
+        .glass-button:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px #222222;
+        }
+
+        /* Navigation Section Displays */
+        .section-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .section-content.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Timeline Connector */
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 6px;
+            background: #1C5D99;
+            transform: translateX(-50%);
+        }
+
+        @media (max-width: 768px) {
+            .timeline-line {
+                left: 2rem;
+            }
+        }
+
+        /* Image Box Frame */
+        .img-frame {
+            position: relative;
+            width: 100%;
+            border: 3px solid #222222;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            background-color: #FEF08A;
+            box-shadow: 3px 3px 0px #222222;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-minionDark flex flex-col justify-between relative">
+
+    <!-- Background Floating Bananas -->
+    <div id="banana-container"></div>
+
+    <!-- MAIN HEADER -->
+    <header class="relative z-10 bg-minionYellow border-b-4 border-minionDark px-4 py-3 shadow-md sticky top-0">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            
+            <!-- Logo -->
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-yellow-300 border-3 border-minionDark rounded-full flex items-center justify-center shadow-[2px_2px_0px_#222]">
+                    <span class="text-3xl">🍌</span>
+                </div>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold tracking-wide text-minionDark">
+                        MINION <span class="text-minionBlue">WORLD</span>
+                    </h1>
+                    <p class="text-xs font-bold text-minionBlueDark">¡Poopaye! Bienvenido al cuartel amarillo</p>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <nav class="flex flex-wrap justify-center gap-2">
+                <button onclick="navigateTo('historia')" id="nav-historia" class="nav-btn glass-button bg-yellow-300 text-minionDark px-3 py-2 rounded-xl text-sm font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-hourglass-start"></i> 1. Historia
+                </button>
+                <button onclick="navigateTo('peliculas')" id="nav-peliculas" class="nav-btn glass-button bg-white text-minionDark px-3 py-2 rounded-xl text-sm font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-film"></i> 2. Películas
+                </button>
+                <button onclick="navigateTo('traductor')" id="nav-traductor" class="nav-btn glass-button bg-white text-minionDark px-3 py-2 rounded-xl text-sm font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-language"></i> 3. Traductor
+                </button>
+                <button onclick="navigateTo('customizer')" id="nav-customizer" class="nav-btn glass-button bg-white text-minionDark px-3 py-2 rounded-xl text-sm font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-paint-brush"></i> 4. Creador 2D
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="relative z-10 max-w-6xl mx-auto px-4 py-8 flex-grow w-full">
+
+        <!-- SECCIÓN 1: HISTORIA Y EVOLUCIÓN (img1.jpg a img5.jpg) -->
+        <section id="sec-historia" class="section-content active">
+            <div class="glass-card p-6 md:p-8 mb-8 text-center bg-yellow-100">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-minionBlueDark mb-2">
+                    🌍 La Evolución de los Minions
+                </h2>
+                <p class="text-gray-700 max-w-2xl mx-auto font-semibold">
+                    Los Minions han recorrido la historia desde el inicio de los tiempos buscando al villano más despreciable para servirle. ¡Mira su trayectoria histórica!
+                </p>
+            </div>
+
+            <!-- Timeline -->
+            <div class="relative my-10">
+                <div class="timeline-line hidden md:block"></div>
+
+                <!-- Timeline 1: Era Prehistórica (img1.jpg) -->
+                <div class="mb-12 flex flex-col md:flex-row items-center w-full">
+                    <div class="md:w-1/2 md:pr-8 md:text-right mb-4 md:mb-0">
+                        <div class="glass-card p-5 bg-yellow-50">
+                            <span class="inline-block bg-minionYellow border-2 border-minionDark font-extrabold px-3 py-1 rounded-full text-xs uppercase mb-2">Etapa 1</span>
+                            <h3 class="text-xl font-bold text-minionBlue">Era Prehistórica (T-Rex)</h3>
+                            <p class="text-sm text-gray-700 mt-2">
+                                Evolucionaron de organismos unicelulares amarillos hasta encontrar al primer gran villano de la historia: el temible Tiranosaurio Rex.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="z-10 w-12 h-12 bg-minionYellow border-4 border-minionDark rounded-full flex items-center justify-center font-bold text-lg shadow-md my-2 md:my-0">
+                        🦖
+                    </div>
+                    <div class="md:w-1/2 md:pl-8">
+                        <div class="glass-card p-3 bg-white flex flex-col items-center">
+                            <div class="img-frame h-52">
+                                <!-- IMAGEN 1: img1.jpg  -->
+                                <img id="preview-img1" src="images/dinosaurios.jpeg" alt="Era Prehistórica T-Rex" class="w-full h-full object-cover" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"p-6 text-center text-xs font-bold text-gray-600\">
+                            </div>
+                           
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline 2: Antiguo Egipto (img2.jpg) -->
+                <div class="mb-12 flex flex-col md:flex-row-reverse items-center w-full">
+                    <div class="md:w-1/2 md:pl-8 md:text-left mb-4 md:mb-0">
+                        <div class="glass-card p-5 bg-yellow-50">
+                            <span class="inline-block bg-minionYellow border-2 border-minionDark font-extrabold px-3 py-1 rounded-full text-xs uppercase mb-2">Etapa 2</span>
+                            <h3 class="text-xl font-bold text-minionBlue">Antiguo Egipto</h3>
+                            <p class="text-sm text-gray-700 mt-2">
+                                Sirvieron a poderosos Faraones construyendo pirámides gigantescas. Lamentablemente, confundieron los planos y aplastaron a su amo por accidente.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="z-10 w-12 h-12 bg-minionYellow border-4 border-minionDark rounded-full flex items-center justify-center font-bold text-lg shadow-md my-2 md:my-0">
+                        🏛️
+                    </div>
+                    <div class="md:w-1/2 md:pr-8">
+                        <div class="glass-card p-3 bg-white flex flex-col items-center">
+                            <div class="img-frame h-52">
+                                <!-- IMAGEN 2: img2.jpg -->
+                                <img id="preview-img2" src="images/faraones.jpg" alt="Antiguo Egipto" class="w-full h-full object-cover" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"p-6 text-center text-xs font-bold text-gray-600\"><i class=\"fa-solid fa-image text-3xl text-minionBlue mb-2 block\">
+                            </div>
+                           
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline 3: Era Napoleónica (img3.jpg) -->
+                <div class="mb-12 flex flex-col md:flex-row items-center w-full">
+                    <div class="md:w-1/2 md:pr-8 md:text-right mb-4 md:mb-0">
+                        <div class="glass-card p-5 bg-yellow-50">
+                            <span class="inline-block bg-minionYellow border-2 border-minionDark font-extrabold px-3 py-1 rounded-full text-xs uppercase mb-2">Etapa 3</span>
+                            <h3 class="text-xl font-bold text-minionBlue">Era Napoleónica</h3>
+                            <p class="text-sm text-gray-700 mt-2">
+                                Formaron filas junto al gran estratega Napoleón Bonaparte en Europa, hasta que un mal disparo de cañón arruinó sus planes.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="z-10 w-12 h-12 bg-minionYellow border-4 border-minionDark rounded-full flex items-center justify-center font-bold text-lg shadow-md my-2 md:my-0">
+                        ⚔️
+                    </div>
+                    <div class="md:w-1/2 md:pl-8">
+                        <div class="glass-card p-3 bg-white flex flex-col items-center">
+                            <div class="img-frame h-52">
+                                <!-- IMAGEN 3: img3.jpg -->
+                                <img id="preview-img3" src="images/bonaparte.webp" alt="Era Napoleónica" class="w-full h-full object-cover" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"p-6 text-center text-xs font-bold text-gray-600\"><i class=\"fa-solid fa-image text-3xl text-minionBlue mb-2 block\"></i>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline 4: Los Años 60 / Villain-Con (img4.jpg) -->
+                <div class="mb-12 flex flex-col md:flex-row-reverse items-center w-full">
+                    <div class="md:w-1/2 md:pl-8 md:text-left mb-4 md:mb-0">
+                        <div class="glass-card p-5 bg-yellow-50">
+                            <span class="inline-block bg-minionYellow border-2 border-minionDark font-extrabold px-3 py-1 rounded-full text-xs uppercase mb-2">Etapa 4</span>
+                            <h3 class="text-xl font-bold text-minionBlue">Los Años 60 (Villain-Con)</h3>
+                            <p class="text-sm text-gray-700 mt-2">
+                                Kevin, Stuart y Bob viajaron a Nueva York y a Orlando para asistir a la Convención de Villanos en busca de un nuevo líder malvado.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="z-10 w-12 h-12 bg-minionYellow border-4 border-minionDark rounded-full flex items-center justify-center font-bold text-lg shadow-md my-2 md:my-0">
+                        🎸
+                    </div>
+                    <div class="md:w-1/2 md:pr-8">
+                        <div class="glass-card p-3 bg-white flex flex-col items-center">
+                            <div class="img-frame h-52">
+                                <!-- IMAGEN 4: img4.jpg -->
+                                <img id="preview-img4" src="images/scarlet.jpg" alt="Villain Con 1960" class="w-full h-full object-cover" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"p-6 text-center text-xs font-bold text-gray-600\"><i class=\"fa-solid fa-image text-3xl text-minionBlue mb-2 block\"></i>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline 5: Encuentro con Gru (img5.jpg) -->
+                <div class="mb-12 flex flex-col md:flex-row items-center w-full">
+                    <div class="md:w-1/2 md:pr-8 md:text-right mb-4 md:mb-0">
+                        <div class="glass-card p-5 bg-yellow-300">
+                            <span class="inline-block bg-minionBlue text-white border-2 border-minionDark font-extrabold px-3 py-1 rounded-full text-xs uppercase mb-2">Etapa 5</span>
+                            <h3 class="text-xl font-bold text-minionDark">El Encuentro con Gru</h3>
+                            <p class="text-sm text-minionDark mt-2">
+                                ¡Por fin encontraron a su maestro ideal! Un joven Gru con grandes ambiciones de convertirse en el villano número 1 del mundo.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="z-10 w-12 h-12 bg-minionBlue text-white border-4 border-minionDark rounded-full flex items-center justify-center font-bold text-lg shadow-md my-2 md:my-0">
+                        🚀
+                    </div>
+                    <div class="md:w-1/2 md:pl-8">
+                        <div class="glass-card p-3 bg-white flex flex-col items-center">
+                            <div class="img-frame h-52">
+                                <!-- IMAGEN 5: img5.jpg -->
+                                <img id="preview-img5" src="images/gru.jpg" alt="Encuentro con Gru" class="w-full h-full object-cover" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"p-6 text-center text-xs font-bold text-gray-600\"><i class=\"fa-solid fa-image text-3xl text-minionBlue mb-2 block\"></i>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: PELÍCULAS (img6.jpg a img11) -->
+        <section id="sec-peliculas" class="section-content">
+            <div class="glass-card p-6 md:p-8 mb-8 text-center bg-blue-100">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-minionBlueDark mb-2">
+                    🎬 Catálogo de Películas
+                </h2>
+                <p class="text-gray-700 max-w-2xl mx-auto font-semibold">
+                    Colección completa de las películas de la saga.
+                </p>
+            </div>
+
+            <!-- Grid de Películas -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <!-- Movie 1 (img6.jpg) -->
+                <div class="glass-card p-4 flex flex-col justify-between">
+                    <div>
+                        <div class="img-frame h-64 mb-3">
+                            <img id="preview-img6" src="images/mi villano 1.jpg" alt="Mi Villano Favorito (2010)" class="w-full h-full object-cover" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"p-8 text-center text-xs font-bold text-gray-600\"><i class=\"fa-solid fa-film text-4xl text-minionBlue mb-2 block\"></i>[Coloca tu archivo img6.jpg]</div>
+                        </div>
+                        <div class="flex justify-between items-center mb-1">
+                            <h3 class="font-bold text-lg text-minionBlueDark">Mi Villano Favorito</h3>
+                            <span class="bg-minionYellow font-bold px-2 py-0.5 rounded text-xs border border-minionDark">2010</span>
+                        </div>
+                       
+                        <input type="file" id="input-img6" class="hidden" accept="image/*" onchange="previewImage(this, 'preview-img6')">
+                        <p class="text-xs text-gray-600 mb-3">
+                            Gru intenta robar la Luna para ser el mayor villano, pero tres niñas huérfanas le cambian la vida.
+                        </p>
+                    </div>
+               
+                        
+                    </div>
+                </div>
+
+                <!-- Movie 2 (img7.jpg) -->
+                <div class="glass-card p-4 flex flex-col justify-between">
+                    <div>
+                        <div class="img-frame h-64 mb-3">
+                            <img id="preview-img7" src="images/mi villano 2.png" alt="Mi Villano Favorito 2 (2013)" class="w-full h-full object-cover" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"p-8 text-center text-xs font-bold text-gray-600\"><i class=\"fa-solid fa-film text-4xl text-minionBlue mb-2 block\"></i>[Coloca tu archivo img7.jpg]</div>
+                        </div>
+                        <div class="flex justify-between items-center mb-1">
+                            <h3 class="font-bold text-lg text-minionBlueDark">Mi Villano Favorito 2</h3>
+                            <span class="bg-minionYellow font-bold px-2 py-0.5 rounded text-xs border border-minionDark">2013</span>
+                        </div>
+                        
+                        <input type="file" id="input-img7" class="hidden" accept="image/*" onchange="previewImage(this, 'preview-img7')">
+                        <p class="text-xs text-gray-600 mb-3">
+                            Gru es reclutado por la Liga Anti-Villanos. Aparecen por primera vez los insaciables Minions Morados.
+                        </p>
+                    </div>
+                    <div class="bg-yellow-50 p-2 rounded-lg border border-yellow-200 text-xs font-semibold text-gray-700">
+                        💡 El morado es el opuesto exacto del amarillo en el círculo cromático.
+                    </div>
+                </div>
+
+                <!-- Movie 3 (img8.jpg) -->
+                <div class="glass-card p-4 flex flex-col justify-between">
+                    <div>
+                        <div class="img-frame h-64 mb-3">
+                            <img id="preview-img8" src="images/minions.avif" alt="Minions (2015)" class="w-full h-full object-cover" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"p-8 text-center text-xs font-bold text-gray-600\"><i class=\"fa-solid fa-film text-4xl text-minionBlue mb-2 block\"></i>[Coloca tu archivo img8.jpg]</div>
+                        </div>
+                        <div class="flex justify-between items-center mb-1">
+                            <h3 class="font-bold text-lg text-minionBlueDark">Minions</h3>
+                            <span class="bg-minionYellow font-bold px-2 py-0.5 rounded text-xs border border-minionDark">2015</span>
+                        </div>
+                        
+                        <input type="file" id="input-img8" class="hidden" accept="image/*" onchange="previewImage(this, 'preview-img8')">
+                        <p class="text-xs text-gray-600 mb-3">
+                            Aventura en solitario de Kevin, Stuart y Bob buscando un nuevo jefe malvado en los años 60.
+                        </p>
+                    </div>
+                    <div class="bg-yellow-50 p-2 rounded-lg border border-yellow-200 text-xs font-semibold text-gray-700">
+                        💡 Pierre Coffin le dio voz a más de 890 Minions en este film.
+                    </div>
+                </div>
+
+                <!-- Movie 4 (img9.jpg) -->
+                <div class="glass-card p-4 flex flex-col justify-between">
+                    <div>
+                        <div class="img-frame h-64 mb-3">
+                            <img id="preview-img9" src="images/mi villano 3.jpg" alt="Mi Villano Favorito 3 (2017)" class="w-full h-full object-cover" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"p-8 text-center text-xs font-bold text-gray-600\"><i class=\"fa-solid fa-film text-4xl text-minionBlue mb-2 block\"></i>[Coloca tu archivo img9.jpg]</div>
+                        </div>
+                        <div class="flex justify-between items-center mb-1">
+                            <h3 class="font-bold text-lg text-minionBlueDark">Mi Villano Favorito 3</h3>
+                            <span class="bg-minionYellow font-bold px-2 py-0.5 rounded text-xs border border-minionDark">2017</span>
+                        </div>
+                        
+                        <input type="file" id="input-img9" class="hidden" accept="image/*" onchange="previewImage(this, 'preview-img9')">
+                        <p class="text-xs text-gray-600 mb-3">
+                            Gru conoce a su hermano gemelo Dru. Los Minions terminan en prisión con sus trajes a rayas.
+                        </p>
+                    </div>
+                    <div class="bg-yellow-50 p-2 rounded-lg border border-yellow-200 text-xs font-semibold text-gray-700">
+                        💡 Incluye un desopilante número musical dentro de la cárcel.
+                    </div>
+                </div>
+
+                <!-- Movie 5 (img10.jpg) -->
+                <div class="glass-card p-4 flex flex-col justify-between">
+                    <div>
+                        <div class="img-frame h-64 mb-3">
+                            <img id="preview-img10" src="images/minions 2.jfif" alt="Minions: El Origen de Gru (2022)" class="w-full h-full object-cover" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"p-8 text-center text-xs font-bold text-gray-600\"><i class=\"fa-solid fa-film text-4xl text-minionBlue mb-2 block\"></i>[Coloca tu archivo img10.jpg]</div>
+                        </div>
+                        <div class="flex justify-between items-center mb-1">
+                            <h3 class="font-bold text-lg text-minionBlueDark">Minions: El Origen de Gru</h3>
+                            <span class="bg-minionYellow font-bold px-2 py-0.5 rounded text-xs border border-minionDark">2022</span>
+                        </div>
+                        
+                        <input type="file" id="input-img10" class="hidden" accept="image/*" onchange="previewImage(this, 'preview-img10')">
+                        <p class="text-xs text-gray-600 mb-3">
+                            En los años 70, los Minions aprenden artes marciales para salvar a un muy joven Gru.
+                        </p>
+                    </div>
+                    <div class="bg-yellow-50 p-2 rounded-lg border border-yellow-200 text-xs font-semibold text-gray-700">
+                        💡 Debut de Otto, el Minion amante de las piedras con carita.
+                    </div>
+                </div>
+
+                <!-- Movie 6 (img11.jpg) -->
+                <div class="glass-card p-4 flex flex-col justify-between">
+                    <div>
+                        <div class="img-frame h-64 mb-3">
+                            <img id="preview-img11" src="images/mi villano 4.jpg" alt="Mi Villano Favorito 4 (2024)" class="w-full h-full object-cover" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"p-8 text-center text-xs font-bold text-gray-600\"><i class=\"fa-solid fa-film text-4xl text-minionBlue mb-2 block\"></i>[Coloca tu archivo img11.jpg]</div>
+                        </div>
+                        <div class="flex justify-between items-center mb-1">
+                            <h3 class="font-bold text-lg text-minionBlueDark">Mi Villano Favorito 4</h3>
+                            <span class="bg-minionYellow font-bold px-2 py-0.5 rounded text-xs border border-minionDark">2024</span>
+                        </div>
+                        
+                        <input type="file" id="input-img11" class="hidden" accept="image/*" onchange="previewImage(this, 'preview-img11')">
+                        <p class="text-xs text-gray-600 mb-3">
+                            Nace Gru Jr. y surgen los superpoderosos 'Mega Minions' genéticamente modificados.
+                        </p>
+                    </div>
+                    <div class="bg-yellow-50 p-2 rounded-lg border border-yellow-200 text-xs font-semibold text-gray-700">
+                        💡 Parodia directa a las películas de superhéroes y mutantes.
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECCIÓN 3: TRADUCTOR A IDIOMA MINION -->
+        <section id="sec-traductor" class="section-content">
+            <div class="glass-card p-6 md:p-8 mb-8 text-center bg-yellow-200">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-minionDark mb-2">
+                    🗣️ Traductor a Idioma Minion (Minionese)
+                </h2>
+                <p class="text-gray-800 max-w-2xl mx-auto font-semibold">
+                    Escribe lo que quieras y tradúcelo automáticamente al lenguaje de las bananas.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Entrada Humana -->
+                <div class="glass-card p-5 bg-white">
+                    <label for="input-human-text" class="block font-extrabold text-minionBlueDark mb-2 text-lg">
+                        <i class="fa-solid fa-user"></i> Tu Texto:
+                    </label>
+                    <textarea id="input-human-text" rows="5" class="w-full p-4 border-2 border-minionDark rounded-xl focus:ring-2 focus:ring-yellow-400 focus:outline-none text-base font-semibold" placeholder="Escribe aquí... Ej: Hola, tengo hambre, me gustan las bananas, gracias..."></textarea>
+                    
+                    <div class="mt-4 flex flex-wrap gap-2">
+                        <span class="text-xs font-bold text-gray-500 self-center">Probar:</span>
+                        <button onclick="setQuickText('Hola amigo')" class="text-xs bg-yellow-100 hover:bg-yellow-200 border border-minionDark font-bold py-1 px-2 rounded-lg">"Hola amigo"</button>
+                        <button onclick="setQuickText('Tengo mucha hambre')" class="text-xs bg-yellow-100 hover:bg-yellow-200 border border-minionDark font-bold py-1 px-2 rounded-lg">"Tengo mucha hambre"</button>
+                        <button onclick="setQuickText('Te amo')" class="text-xs bg-yellow-100 hover:bg-yellow-200 border border-minionDark font-bold py-1 px-2 rounded-lg">"Te amo"</button>
+                        <button onclick="setQuickText('Gracias adios')" class="text-xs bg-yellow-100 hover:bg-yellow-200 border border-minionDark font-bold py-1 px-2 rounded-lg">"Gracias adios"</button>
+                    </div>
+                </div>
+
+                <!-- Resultado Minion -->
+                <div class="glass-card p-5 bg-yellow-300 flex flex-col justify-between">
+                    <div>
+                        <label class="block font-extrabold text-minionDark mb-2 text-lg">
+                            🍌 Traducción Minion:
+                        </label>
+                        <div id="output-minion-text" class="w-full min-h-[120px] p-4 bg-white border-2 border-minionDark rounded-xl text-xl font-bold text-minionBlue font-heading flex items-center justify-center text-center tracking-wide">
+                            Bello! Tank yu!
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex">
+                        <button onclick="copyMinionText()" class="glass-button bg-white hover:bg-gray-100 text-minionDark font-extrabold py-3 px-4 rounded-xl text-sm w-full flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-copy text-lg"></i> Copiar Texto
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mini Diccionario de Frases -->
+            <div class="glass-card p-6 mt-8 bg-white">
+                <h3 class="text-xl font-extrabold text-minionBlueDark mb-4 text-center">
+                    📖 Diccionario Rápido Minionese
+                </h3>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 text-sm">
+                    <div class="bg-yellow-50 p-2 rounded-lg border border-yellow-200"><strong>Bello</strong> = Hola</div>
+                    <div class="bg-yellow-50 p-2 rounded-lg border border-yellow-200"><strong>Poopaye</strong> = Adiós</div>
+                    <div class="bg-yellow-50 p-2 rounded-lg border border-yellow-200"><strong>Tank Yu</strong> = Gracias</div>
+                    <div class="bg-yellow-50 p-2 rounded-lg border border-yellow-200"><strong>Tulaliloo ti amo</strong> = Te amo</div>
+                    <div class="bg-yellow-50 p-2 rounded-lg border border-yellow-200"><strong>Me want banana</strong> = Tengo hambre</div>
+                    <div class="bg-yellow-50 p-2 rounded-lg border border-yellow-200"><strong>Kampai!</strong> = ¡Salud!</div>
+                    <div class="bg-yellow-50 p-2 rounded-lg border border-yellow-200"><strong>Bee Do Bee Do</strong> = Fuego</div>
+                    <div class="bg-yellow-50 p-2 rounded-lg border border-yellow-200"><strong>Pika!</strong> = ¡Mira!</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 4: CUSTOMIZADOR DE MINION 2D -->
+        <section id="sec-customizer" class="section-content">
+            <div class="glass-card p-6 md:p-8 mb-8 text-center bg-yellow-300">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-minionDark mb-2">
+                    ✏️ Creador de Minion 2D
+                </h2>
+                <p class="text-gray-800 max-w-2xl mx-auto font-semibold">
+                    Diseña tu Minion personalizado variando sus ojos, cuerpo, trajes, peinados y accesorios.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                
+                <!-- Canvas Display Column -->
+                <div class="lg:col-span-5 flex flex-col items-center">
+                    <div class="glass-card p-4 bg-white relative w-full max-w-[360px] flex flex-col items-center">
+                        <canvas id="minionCanvas" width="320" height="420" class="rounded-xl border-2 border-yellow-300 bg-gradient-to-b from-blue-50 to-yellow-100 shadow-inner cursor-pointer"></canvas>
+                        
+                        <div class="mt-4 w-full flex gap-2">
+                            <button onclick="randomizeMinion()" class="glass-button bg-yellow-400 hover:bg-yellow-500 text-minionDark font-extrabold py-2 px-3 rounded-xl text-xs flex-1 flex items-center justify-center gap-1">
+                                <i class="fa-solid fa-dice"></i> Aleatorio
+                            </button>
+                            <button onclick="downloadMinion()" class="glass-button bg-minionBlue hover:bg-minionBlueDark text-white font-extrabold py-2 px-3 rounded-xl text-xs flex-1 flex items-center justify-center gap-1">
+                                <i class="fa-solid fa-download"></i> Descargar PNG
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customizer Control Options -->
+                <div class="lg:col-span-7 glass-card p-6 bg-white space-y-5">
+                    
+                    <!-- Forma Cuerpo -->
+                    <div>
+                        <label class="block font-extrabold text-minionBlueDark text-sm mb-2">
+                            <i class="fa-solid fa-child"></i> Forma del Cuerpo:
+                        </label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button onclick="updateOption('body', 'tall')" id="opt-body-tall" class="opt-btn-body glass-button bg-yellow-100 py-2 rounded-lg font-bold text-xs">Alto y Delgado</button>
+                            <button onclick="updateOption('body', 'normal')" id="opt-body-normal" class="opt-btn-body glass-button bg-yellow-400 py-2 rounded-lg font-bold text-xs">Mediano (Normal)</button>
+                            <button onclick="updateOption('body', 'short')" id="opt-body-short" class="opt-btn-body glass-button bg-yellow-100 py-2 rounded-lg font-bold text-xs">Bajito y Gordito</button>
+                        </div>
+                    </div>
+
+                    <!-- Ojos y Gafas -->
+                    <div>
+                        <label class="block font-extrabold text-minionBlueDark text-sm mb-2">
+                            <i class="fa-solid fa-glasses"></i> Ojos y Antiparras:
+                        </label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button onclick="updateOption('eyes', 'one')" id="opt-eyes-one" class="opt-btn-eyes glass-button bg-yellow-100 py-2 rounded-lg font-bold text-xs">1 Ojo (Stuart)</button>
+                            <button onclick="updateOption('eyes', 'two')" id="opt-eyes-two" class="opt-btn-eyes glass-button bg-yellow-400 py-2 rounded-lg font-bold text-xs">2 Ojos (Kevin)</button>
+                            <button onclick="updateOption('eyes', 'hetero')" id="opt-eyes-hetero" class="opt-btn-eyes glass-button bg-yellow-100 py-2 rounded-lg font-bold text-xs">Heterocromía (Bob)</button>
+                        </div>
+                    </div>
+
+                    <!-- Peinados -->
+                    <div>
+                        <label class="block font-extrabold text-minionBlueDark text-sm mb-2">
+                            <i class="fa-solid fa-user-ninja"></i> Peinado:
+                        </label>
+                        <div class="grid grid-cols-4 gap-2">
+                            <button onclick="updateOption('hair', 'bald')" id="opt-hair-bald" class="opt-btn-hair glass-button bg-yellow-100 py-2 rounded-lg font-bold text-xs">Calvo</button>
+                            <button onclick="updateOption('hair', 'sprout')" id="opt-hair-sprout" class="opt-btn-hair glass-button bg-yellow-400 py-2 rounded-lg font-bold text-xs">Brotes (Kevin)</button>
+                            <button onclick="updateOption('hair', 'flat')" id="opt-hair-flat" class="opt-btn-hair glass-button bg-yellow-100 py-2 rounded-lg font-bold text-xs">Al Medio</button>
+                            <button onclick="updateOption('hair', 'wild')" id="opt-hair-wild" class="opt-btn-hair glass-button bg-yellow-100 py-2 rounded-lg font-bold text-xs">Despeinado</button>
+                        </div>
+                    </div>
+
+                    <!-- Vestimenta -->
+                    <div>
+                        <label class="block font-extrabold text-minionBlueDark text-sm mb-2">
+                            <i class="fa-solid fa-shirt"></i> Traje / Ropa:
+                        </label>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                            <button onclick="updateOption('outfit', 'classic')" id="opt-outfit-classic" class="opt-btn-outfit glass-button bg-yellow-400 py-2 rounded-lg font-bold text-xs">Overol Mezclilla</button>
+                            <button onclick="updateOption('outfit', 'prison')" id="opt-outfit-prison" class="opt-btn-outfit glass-button bg-yellow-100 py-2 rounded-lg font-bold text-xs">Prisión Rayas</button>
+                            <button onclick="updateOption('outfit', 'caveman')" id="opt-outfit-caveman" class="opt-btn-outfit glass-button bg-yellow-100 py-2 rounded-lg font-bold text-xs">Piel Caverna</button>
+                            <button onclick="updateOption('outfit', 'hawaiian')" id="opt-outfit-hawaiian" class="opt-btn-outfit glass-button bg-yellow-100 py-2 rounded-lg font-bold text-xs">Hawaiano</button>
+                        </div>
+                    </div>
+
+                    <!-- Expresión -->
+                    <div>
+                        <label class="block font-extrabold text-minionBlueDark text-sm mb-2">
+                            <i class="fa-solid fa-face-smile"></i> Expresión de la Boca:
+                        </label>
+                        <div class="grid grid-cols-4 gap-2">
+                            <button onclick="updateOption('mouth', 'smile')" id="opt-mouth-smile" class="opt-btn-mouth glass-button bg-yellow-400 py-2 rounded-lg font-bold text-xs">Sonrisa</button>
+                            <button onclick="updateOption('mouth', 'tongue')" id="opt-mouth-tongue" class="opt-btn-mouth glass-button bg-yellow-100 py-2 rounded-lg font-bold text-xs">Lengua Fuera</button>
+                            <button onclick="updateOption('mouth', 'open')" id="opt-mouth-open" class="opt-btn-mouth glass-button bg-yellow-100 py-2 rounded-lg font-bold text-xs">Sorprendido</button>
+                            <button onclick="updateOption('mouth', 'smirk')" id="opt-mouth-smirk" class="opt-btn-mouth glass-button bg-yellow-100 py-2 rounded-lg font-bold text-xs">Malicioso</button>
+                        </div>
+                    </div>
+
+                    <!-- Accesorios -->
+                    <div>
+                        <label class="block font-extrabold text-minionBlueDark text-sm mb-2">
+                            <i class="fa-solid fa-gem"></i> Objeto en Mano:
+                        </label>
+                        <div class="grid grid-cols-4 gap-2">
+                            <button onclick="updateOption('accessory', 'none')" id="opt-accessory-none" class="opt-btn-accessory glass-button bg-yellow-400 py-2 rounded-lg font-bold text-xs">Ninguno</button>
+                            <button onclick="updateOption('accessory', 'banana')" id="opt-accessory-banana" class="opt-btn-accessory glass-button bg-yellow-100 py-2 rounded-lg font-bold text-xs">Plátano 🍌</button>
+                            <button onclick="updateOption('accessory', 'teddy')" id="opt-accessory-teddy" class="opt-btn-accessory glass-button bg-yellow-100 py-2 rounded-lg font-bold text-xs">Osito Tim 🧸</button>
+                            <button onclick="updateOption('accessory', 'blaster')" id="opt-accessory-blaster" class="opt-btn-accessory glass-button bg-yellow-100 py-2 rounded-lg font-bold text-xs">Blaster 🔫</button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER NAV NAVIGATION -->
+    <footer class="relative z-10 bg-minionDark text-white py-4 border-t-4 border-yellow-400 mt-auto">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <button onclick="navigatePrev()" id="btn-prev-section" class="glass-button bg-yellow-400 text-minionDark font-bold px-4 py-2 rounded-xl text-sm flex items-center gap-2">
+                <i class="fa-solid fa-arrow-left"></i> Anterior
+            </button>
+
+            <span id="section-indicator" class="text-yellow-300 font-extrabold text-xs tracking-widest uppercase">
+                Sección 1 de 4: Historia
+            </span>
+
+            <button onclick="navigateNext()" id="btn-next-section" class="glass-button bg-minionBlue hover:bg-minionBlueDark text-white font-bold px-4 py-2 rounded-xl text-sm flex items-center gap-2">
+                Siguiente <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        /* Floating Bananas Background Generator */
+        function createFloatingBananas() {
+            const container = document.getElementById('banana-container');
+            const bananaCount = 18;
+
+            for (let i = 0; i < bananaCount; i++) {
+                const banana = document.createElement('div');
+                banana.className = 'floating-banana';
+                banana.innerText = '🍌';
+                banana.style.left = Math.random() * 100 + 'vw';
+                banana.style.fontSize = (Math.random() * 20 + 20) + 'px';
+                banana.style.animationDuration = (Math.random() * 12 + 8) + 's';
+                banana.style.animationDelay = (Math.random() * 10) + 's';
+                container.appendChild(banana);
+            }
+        }
+
+        /* Section Navigation System */
+        const sections = ['historia', 'peliculas', 'traductor', 'customizer'];
+        let currentSectionIndex = 0;
+
+        function navigateTo(sectionId) {
+            currentSectionIndex = sections.indexOf(sectionId);
+            updateView();
+        }
+
+        function navigateNext() {
+            if (currentSectionIndex < sections.length - 1) {
+                currentSectionIndex++;
+            } else {
+                currentSectionIndex = 0;
+            }
+            updateView();
+        }
+
+        function navigatePrev() {
+            if (currentSectionIndex > 0) {
+                currentSectionIndex--;
+            } else {
+                currentSectionIndex = sections.length - 1;
+            }
+            updateView();
+        }
+
+        function updateView() {
+            const activeId = sections[currentSectionIndex];
+
+            sections.forEach(id => {
+                const sec = document.getElementById(`sec-${id}`);
+                const btn = document.getElementById(`nav-${id}`);
+
+                if (id === activeId) {
+                    sec.classList.add('active');
+                    btn.classList.remove('bg-white');
+                    btn.classList.add('bg-yellow-300');
+                } else {
+                    sec.classList.remove('active');
+                    btn.classList.remove('bg-yellow-300');
+                    btn.classList.add('bg-white');
+                }
+            });
+
+            const titles = ['Historia y Evolución', 'Galería de Películas', 'Traductor Minion', 'Creador 2D'];
+            document.getElementById('section-indicator').innerText = `Sección ${currentSectionIndex + 1} de 4: ${titles[currentSectionIndex]}`;
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            if (activeId === 'customizer') {
+                drawMinion();
+            }
+        }
+
+        /* Image Local Preview Handler */
+        function triggerFileInput(inputId) {
+            document.getElementById(inputId).click();
+        }
+
+        function previewImage(input, previewImgId) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.getElementById(previewImgId);
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        /* Minionese Translator Engine */
+        const minionDictionary = {
+            'hola': 'bello',
+            'adios': 'poopaye',
+            'chao': 'poopaye',
+            'gracias': 'tank yu',
+            'amigo': 'como va',
+            'amigos': 'como va',
+            'comida': 'banana',
+            'manzana': 'bapple',
+            'platano': 'banana',
+            'hambre': 'me want banana',
+            'comer': 'me want banana',
+            'amor': 'tulaliloo',
+            'te amo': 'tulaliloo ti amo',
+            'fuego': 'bee do bee do',
+            'mira': 'pika',
+            'salud': 'kampai',
+            'juguete': 'papoy'
+        };
+
+        const randomMinionWords = ['la', 'ta', 'ba', 'tu', 'bello', 'poopaye', 'tank', 'papoy', 'muak', 'bee', 'do', 'pika'];
+
+        function translateToMinion(text) {
+            if (!text.trim()) return "Bello! Tank yu!";
+
+            let cleanText = text.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+            let words = cleanText.split(/\s+/);
+
+            let translatedWords = words.map(word => {
+                if (minionDictionary[word]) {
+                    return minionDictionary[word];
+                } else {
+                    let minionWord = "";
+                    let syllables = Math.max(1, Math.floor(word.length / 2));
+                    for (let i = 0; i < syllables; i++) {
+                        minionWord += randomMinionWords[Math.floor(Math.random() * randomMinionWords.length)];
+                    }
+                    return minionWord;
+                }
+            });
+
+            let result = translatedWords.join(" ");
+            return result.charAt(0).toUpperCase() + result.slice(1) + "!";
+        }
+
+        const inputHuman = document.getElementById('input-human-text');
+        const outputMinion = document.getElementById('output-minion-text');
+
+        inputHuman.addEventListener('input', () => {
+            outputMinion.innerText = translateToMinion(inputHuman.value);
+        });
+
+        function setQuickText(str) {
+            inputHuman.value = str;
+            outputMinion.innerText = translateToMinion(str);
+        }
+
+        function copyMinionText() {
+            const text = outputMinion.innerText;
+            const tempInput = document.createElement('textarea');
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            alert('¡Texto Minion copiado! 🍌');
+        }
+
+        /* Minion 2D Canvas Drawing Engine */
+        const minionState = {
+            body: 'normal',
+            eyes: 'two',
+            hair: 'sprout',
+            outfit: 'classic',
+            mouth: 'smile',
+            accessory: 'none'
+        };
+
+        function updateOption(category, val) {
+            minionState[category] = val;
+
+            document.querySelectorAll(`.opt-btn-${category}`).forEach(btn => {
+                btn.classList.remove('bg-yellow-400');
+                btn.classList.add('bg-yellow-100');
+            });
+            const activeBtn = document.getElementById(`opt-${category}-${val}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-yellow-100');
+                activeBtn.classList.add('bg-yellow-400');
+            }
+
+            drawMinion();
+        }
+
+        function randomizeMinion() {
+            const bodies = ['tall', 'normal', 'short'];
+            const eyesArr = ['one', 'two', 'hetero'];
+            const hairs = ['bald', 'sprout', 'flat', 'wild'];
+            const outfits = ['classic', 'prison', 'caveman', 'hawaiian'];
+            const mouths = ['smile', 'tongue', 'open', 'smirk'];
+            const accessories = ['none', 'banana', 'teddy', 'blaster'];
+
+            updateOption('body', bodies[Math.floor(Math.random() * bodies.length)]);
+            updateOption('eyes', eyesArr[Math.floor(Math.random() * eyesArr.length)]);
+            updateOption('hair', hairs[Math.floor(Math.random() * hairs.length)]);
+            updateOption('outfit', outfits[Math.floor(Math.random() * outfits.length)]);
+            updateOption('mouth', mouths[Math.floor(Math.random() * mouths.length)]);
+            updateOption('accessory', accessories[Math.floor(Math.random() * accessories.length)]);
+        }
+
+        function drawMinion() {
+            const canvas = document.getElementById('minionCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const centerX = canvas.width / 2;
+            let bodyY, bodyWidth, bodyHeight, bodyRadius;
+
+            if (minionState.body === 'tall') {
+                bodyWidth = 120;
+                bodyHeight = 260;
+                bodyY = 100;
+            } else if (minionState.body === 'short') {
+                bodyWidth = 150;
+                bodyHeight = 190;
+                bodyY = 160;
+            } else {
+                bodyWidth = 135;
+                bodyHeight = 220;
+                bodyY = 130;
+            }
+
+            bodyRadius = bodyWidth / 2;
+
+            /* Feet */
+            ctx.fillStyle = '#111111';
+            ctx.beginPath();
+            ctx.ellipse(centerX - 35, bodyY + bodyHeight - 10, 22, 12, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(centerX + 35, bodyY + bodyHeight - 10, 22, 12, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            /* Body */
+            ctx.fillStyle = '#FFD000';
+            ctx.strokeStyle = '#222222';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.roundRect(centerX - bodyRadius, bodyY, bodyWidth, bodyHeight - 20, bodyRadius);
+            ctx.fill();
+            ctx.stroke();
+
+            /* Hair */
+            ctx.strokeStyle = '#222222';
+            ctx.lineWidth = 3;
+            if (minionState.hair === 'sprout') {
+                for (let i = -2; i <= 2; i++) {
+                    ctx.beginPath();
+                    ctx.moveTo(centerX + (i * 6), bodyY);
+                    ctx.quadraticCurveTo(centerX + (i * 12), bodyY - 25, centerX + (i * 10), bodyY - 30);
+                    ctx.stroke();
+                }
+            } else if (minionState.hair === 'flat') {
+                for (let i = -20; i <= 20; i += 8) {
+                    ctx.beginPath();
+                    ctx.moveTo(centerX + i, bodyY);
+                    ctx.lineTo(centerX + i + 10, bodyY - 15);
+                    ctx.stroke();
+                }
+            } else if (minionState.hair === 'wild') {
+                for (let i = -25; i <= 25; i += 10) {
+                    ctx.beginPath();
+                    ctx.moveTo(centerX + i, bodyY);
+                    ctx.lineTo(centerX + i * 1.3, bodyY - 22);
+                    ctx.stroke();
+                }
+            }
+
+            /* Arms & Gloves */
+            ctx.fillStyle = '#FFD000';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.rect(centerX - bodyRadius - 16, bodyY + bodyHeight / 2 - 20, 18, 50);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.rect(centerX + bodyRadius - 2, bodyY + bodyHeight / 2 - 20, 18, 50);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#222222';
+            ctx.beginPath();
+            ctx.arc(centerX - bodyRadius - 7, bodyY + bodyHeight / 2 + 30, 12, 0, Math.PI * 2);
+            ctx.arc(centerX + bodyRadius + 7, bodyY + bodyHeight / 2 + 30, 12, 0, Math.PI * 2);
+            ctx.fill();
+
+            /* Outfit */
+            const outfitTopY = bodyY + (bodyHeight * 0.45);
+            if (minionState.outfit === 'classic') {
+                ctx.fillStyle = '#1C5D99';
+                ctx.beginPath();
+                ctx.rect(centerX - bodyRadius, outfitTopY + 30, bodyWidth, (bodyY + bodyHeight - 20) - (outfitTopY + 30));
+                ctx.rect(centerX - bodyRadius + 18, outfitTopY, bodyWidth - 36, 40);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.lineWidth = 6;
+                ctx.beginPath();
+                ctx.moveTo(centerX - bodyRadius + 5, outfitTopY + 35);
+                ctx.lineTo(centerX - bodyRadius + 22, outfitTopY + 5);
+                ctx.moveTo(centerX + bodyRadius - 5, outfitTopY + 35);
+                ctx.lineTo(centerX + bodyRadius - 22, outfitTopY + 5);
+                ctx.stroke();
+
+                ctx.fillStyle = '#222222';
+                ctx.beginPath();
+                ctx.arc(centerX, outfitTopY + 20, 10, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#FFD000';
+                ctx.font = 'bold 10px Fredoka';
+                ctx.fillText('G', centerX - 3, outfitTopY + 24);
+
+            } else if (minionState.outfit === 'prison') {
+                ctx.fillStyle = '#FFFFFF';
+                ctx.beginPath();
+                ctx.rect(centerX - bodyRadius, outfitTopY + 20, bodyWidth, (bodyY + bodyHeight - 20) - (outfitTopY + 20));
+                ctx.rect(centerX - bodyRadius + 15, outfitTopY, bodyWidth - 30, 30);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.fillStyle = '#222222';
+                for (let s = outfitTopY; s < bodyY + bodyHeight - 20; s += 20) {
+                    ctx.fillRect(centerX - bodyRadius + 2, s, bodyWidth - 4, 10);
+                }
+            } else if (minionState.outfit === 'caveman') {
+                ctx.fillStyle = '#8B4513';
+                ctx.beginPath();
+                ctx.moveTo(centerX - bodyRadius, outfitTopY + 10);
+                ctx.lineTo(centerX + bodyRadius, outfitTopY + 25);
+                ctx.lineTo(centerX + bodyRadius - 10, bodyY + bodyHeight - 20);
+                ctx.lineTo(centerX - bodyRadius + 10, bodyY + bodyHeight - 20);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+            } else if (minionState.outfit === 'hawaiian') {
+                ctx.fillStyle = '#32CD32';
+                ctx.beginPath();
+                ctx.rect(centerX - bodyRadius, outfitTopY + 30, bodyWidth, (bodyY + bodyHeight - 20) - (outfitTopY + 30));
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.fillStyle = '#5C4033';
+                ctx.beginPath();
+                ctx.arc(centerX - 20, outfitTopY + 15, 12, 0, Math.PI * 2);
+                ctx.arc(centerX + 20, outfitTopY + 15, 12, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            /* Eyes and Glasses */
+            const eyeY = bodyY + (bodyHeight * 0.28);
+            ctx.lineWidth = 12;
+            ctx.strokeStyle = '#555555';
+            ctx.beginPath();
+            ctx.moveTo(centerX - bodyRadius - 2, eyeY);
+            ctx.lineTo(centerX + bodyRadius + 2, eyeY);
+            ctx.stroke();
+
+            ctx.lineWidth = 6;
+            ctx.strokeStyle = '#A0A0A0';
+            ctx.fillStyle = '#FFFFFF';
+
+            if (minionState.eyes === 'one') {
+                const r = 32;
+                ctx.beginPath();
+                ctx.arc(centerX, eyeY, r, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.fillStyle = '#663300';
+                ctx.beginPath();
+                ctx.arc(centerX, eyeY, 11, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#000';
+                ctx.beginPath();
+                ctx.arc(centerX, eyeY, 5, 0, Math.PI * 2);
+                ctx.fill();
+            } else {
+                const r = 24;
+                const offset = 22;
+
+                ctx.beginPath();
+                ctx.arc(centerX - offset, eyeY, r, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(centerX + offset, eyeY, r, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.fillStyle = (minionState.eyes === 'hetero') ? '#2E8B57' : '#663300';
+                ctx.beginPath();
+                ctx.arc(centerX - offset, eyeY, 8, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#000';
+                ctx.beginPath();
+                ctx.arc(centerX - offset, eyeY, 4, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#663300';
+                ctx.beginPath();
+                ctx.arc(centerX + offset, eyeY, 8, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#000';
+                ctx.beginPath();
+                ctx.arc(centerX + offset, eyeY, 4, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            /* Mouth */
+            const mouthY = eyeY + 45;
+            ctx.strokeStyle = '#222222';
+            ctx.lineWidth = 3.5;
+            ctx.fillStyle = '#990000';
+
+            if (minionState.mouth === 'smile') {
+                ctx.beginPath();
+                ctx.arc(centerX, mouthY, 20, 0.1 * Math.PI, 0.9 * Math.PI);
+                ctx.stroke();
+            } else if (minionState.mouth === 'tongue') {
+                ctx.beginPath();
+                ctx.arc(centerX, mouthY - 5, 18, 0, Math.PI);
+                ctx.fill();
+                ctx.stroke();
+                ctx.fillStyle = '#FF6699';
+                ctx.beginPath();
+                ctx.arc(centerX, mouthY + 5, 10, 0, Math.PI);
+                ctx.fill();
+            } else if (minionState.mouth === 'open') {
+                ctx.beginPath();
+                ctx.ellipse(centerX, mouthY, 12, 16, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+            } else if (minionState.mouth === 'smirk') {
+                ctx.beginPath();
+                ctx.moveTo(centerX - 15, mouthY + 5);
+                ctx.quadraticCurveTo(centerX, mouthY - 5, centerX + 18, mouthY + 8);
+                ctx.stroke();
+            }
+
+            /* Accessory */
+            if (minionState.accessory === 'banana') {
+                ctx.font = '32px serif';
+                ctx.fillText('🍌', centerX + bodyRadius + 5, bodyY + bodyHeight / 2 + 35);
+            } else if (minionState.accessory === 'teddy') {
+                ctx.font = '32px serif';
+                ctx.fillText('🧸', centerX + bodyRadius + 5, bodyY + bodyHeight / 2 + 35);
+            } else if (minionState.accessory === 'blaster') {
+                ctx.font = '32px serif';
+                ctx.fillText('🔫', centerX + bodyRadius + 5, bodyY + bodyHeight / 2 + 35);
+            }
+        }
+
+        function downloadMinion() {
+            const canvas = document.getElementById('minionCanvas');
+            const link = document.createElement('a');
+            link.download = 'mi-minion.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        window.onload = function () {
+            createFloatingBananas();
+            drawMinion();
+        };
+    </script>
+</body>
+</html>
